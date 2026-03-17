@@ -38,3 +38,12 @@ const main = async () => {
   }
 };
 main();
+
+
+const makeSound = async(type) => {
+  const sound = "/System/Library/Sounds/";
+  await new Deno.Command("afplay", {
+    args: [sound + type],
+  }).output();
+}
+await makeSound("Pop.aiff");

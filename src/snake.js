@@ -40,7 +40,7 @@ export const flushScreen = (screen) => {
 };
 
 export const insertObjectsIntoScreen = (screen, object, type) => {
-  const ball = (type === "snake") ? "🔵" : "🟡";
+  const ball = (type === "snake") ? "🔵" : "🔴";
   for (let i = 0; i < object.length; i++) {
     screen[object[i].y][object[i].x] = ball;
   }
@@ -149,6 +149,7 @@ export const didEatFood = (food, snake) => {
 };
 
 const enlargeSnake = (snake) => {
+  console.log("\x07");
   const newPart = { x: snake[0].x, y: snake[0].y };
   snake.unshift(newPart);
 };
@@ -168,6 +169,13 @@ const renderState = (score, screen, snake, food) => {
   insertObjectsIntoScreen(screen, [food], "food");
 };
 
+const makeSound = async (type) => {
+  const sound = "/System/Library/Sounds/";
+  await new Deno.Command("afplay", {
+    args: [sound + type],
+  }).output();
+};
+
 const initializeGame = () => {
   const snake = [
     { x: 3, y: 1 },
@@ -181,7 +189,7 @@ const initializeGame = () => {
   return [screen, snake];
 };
 
-const snakeGame = async () => {
+export const snakeGame = async () => {
   const [screen, snake] = initializeGame();
   let score = 0;
   let food = generateFood(screen);
@@ -189,6 +197,7 @@ const snakeGame = async () => {
   while (true) {
     renderState(score, screen, snake, food);
     if (isGameOver(snake, screen)) {
+      await makeSound("Basso.aiff");
       cleanUp();
     }
     if (didEatFood(food, snake)) {
@@ -201,5 +210,5 @@ const snakeGame = async () => {
   }
 };
 
-snakeGame();
+// snakeGame();
 // wall collision conditions when uneven grid size
